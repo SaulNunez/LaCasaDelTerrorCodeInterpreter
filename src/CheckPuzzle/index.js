@@ -2,24 +2,17 @@ import Interpreter from 'js-interpreter';
 const acorn = require("acorn");
 const walk = require("acorn-walk");
 
-export enum Check {
-    CHECK_NOTHING,
-    CHECK_FOR_BRANCHING,
-    CHECK_FOR_LOOPS,
-    CHECK_FOR_FUNCTION
-}
-
-export default function CheckPuzzle(puzzleResultSource: string, expectedOutput: string): boolean {
+export default function CheckPuzzle(puzzleResultSource, expectedOutput) {
 
     return GetStdOutput(puzzleResultSource) === expectedOutput;
 }
 
-export function GetStdOutput(code: string){
+export function GetStdOutput(code){
     let output = "";
-    const interpreter: any = new Interpreter(code, (interpreter: any, scope: any) => {
+    const interpreter = new Interpreter(code, (interpreter, scope) => {
         // Add an API function for the alert() block.
         interpreter.setProperty(scope, 'alert',
-            interpreter.createNativeFunction((text: string) => output.concat(text + ' ')));
+            interpreter.createNativeFunction((text) => output.concat(text + ' ')));
     });
 
     interpreter.run();
@@ -27,8 +20,8 @@ export function GetStdOutput(code: string){
     return output.trimRight();
 }
 
-export function CheckSyntaxForConstruct(checkType: Check, code: string){
-    let foundExpected: boolean = false;
+export function CheckSyntaxForConstruct(checkType, code){
+    let foundExpected = false;
 
     //Revisar que el codigo tiene los objetos necesarios
     if (checkType != Check.CHECK_NOTHING) {
