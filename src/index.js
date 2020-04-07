@@ -1,5 +1,6 @@
 import bodyParser from 'body-parser';
 import express from 'express';
+import { availableChecks } from './CheckPuzzle';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -13,7 +14,20 @@ app.use('/', (request, response) => {
         response.sendStatus(400);
     }
 
-    let checkType = {}
+    let checkType = request.body.checkType || "";
+    if(!checkType || !availableChecks.findIndex(x => x === checkType) != -1){
+        response.sendStatus(400);
+    }
+
+    let literalAsign = request.body.declaredVariables || {};
+
+    let expectedOutput = request.body.expectedOutput || "";
+
+    response.send({
+        outputChecked: null,
+        varCheck: null,
+        syntaxCheck: null
+    });
 });
 
 app.listen(3000);
