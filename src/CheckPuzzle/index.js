@@ -15,7 +15,7 @@ export function CheckPuzzle(code, expectedOutput) {
     return output.trimRight() === expectedOutput;
 }
 
-export const availableChecks = ["CheckConditional", "CheckCyclicalStructures", "CheckFunction"];
+export const availableChecks = ["CheckConditional", "CheckCyclicalStructures", "CheckFunction", "CheckNone"];
 
 export function CheckSyntaxForConstruct(checkType, code){
     let foundExpected = false;
@@ -67,6 +67,6 @@ export function CheckSyntaxForConstruct(checkType, code){
     return foundExpected;
 }
 
-export function CheckForDeclaredVariableDeclarationLiterals(){
+export function CheckForDeclaredVariableDeclarationLiterals(code, expectedVars){
     
 }
