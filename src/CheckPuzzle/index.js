@@ -2,12 +2,7 @@ import Interpreter from 'js-interpreter';
 const acorn = require("acorn");
 const walk = require("acorn-walk");
 
-export default function CheckPuzzle(puzzleResultSource, expectedOutput) {
-
-    return GetStdOutput(puzzleResultSource) === expectedOutput;
-}
-
-export function GetStdOutput(code){
+export function CheckPuzzle(code, expectedOutput) {
     let output = "";
     const interpreter = new Interpreter(code, (interpreter, scope) => {
         // Add an API function for the alert() block.
@@ -17,14 +12,16 @@ export function GetStdOutput(code){
 
     interpreter.run();
 
-    return output.trimRight();
+    return output.trimRight() === expectedOutput;
 }
+
+export const availableChecks = ["CheckConditional", "CheckCyclicalStructures", "CheckFunction"];
 
 export function CheckSyntaxForConstruct(checkType, code){
     let foundExpected = false;
 
     //Revisar que el codigo tiene los objetos necesarios
-    if (checkType != Check.CHECK_NOTHING) {
+    if (checkType) {
         let found = {
             ifs: 0,
             loops: 0,
@@ -53,13 +50,13 @@ export function CheckSyntaxForConstruct(checkType, code){
         });
 
         switch(checkType){
-            case Check.CHECK_FOR_BRANCHING:
+            case "CheckConditional":
                 foundExpected = found.ifs > 0;
                 break;
-            case Check.CHECK_FOR_LOOPS:
+            case "CheckCyclicalStructures":
                 foundExpected = found.loops > 0;
                 break;
-            case Check.CHECK_FOR_FUNCTION:
+            case "CheckFunction":
                 foundExpected = found.func > 0;
                 break;
         }
@@ -68,4 +65,8 @@ export function CheckSyntaxForConstruct(checkType, code){
     }
 
     return foundExpected;
+}
+
+export function CheckForDeclaredVariableDeclarationLiterals(){
+    
 }
