@@ -26,9 +26,7 @@ app.use('/', (request, response) => {
     let expectedOutput = request.body.expectedOutput || "";
 
     response.send({
-        outputChecked: expectedOutput? CheckPuzzle(code): null,
-        varCheck: literalAsign? CheckForDeclaredVariableDeclarationLiterals(code, literalAsign): null,
-        syntaxCheck: CheckSyntaxForConstruct(checkType, code)
+        sequenceOutput: null
     });
 });
 

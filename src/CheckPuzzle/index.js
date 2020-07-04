@@ -1,72 +1,25 @@
 import Interpreter from 'js-interpreter';
-const acorn = require("acorn");
-const walk = require("acorn-walk");
 
-export function CheckPuzzle(code, expectedOutput) {
+const MAX_EMULATOR_STEP_COUNT = 1000
+
+export default function CheckPuzzle(code){
     let output = "";
     const interpreter = new Interpreter(code, (interpreter, scope) => {
-        // Add an API function for the alert() block.
         interpreter.setProperty(scope, 'alert',
             interpreter.createNativeFunction((text) => output.concat(text + ' ')));
     });
 
-    interpreter.run();
+    let runCount = 0;
 
-    return output.trimRight() === expectedOutput;
-}
-
-export const availableChecks = ["CheckConditional", "CheckCyclicalStructures", "CheckFunction", "CheckNone"];
-
-export function CheckSyntaxForConstruct(checkType, code){
-    let foundExpected = false;
-
-    //Revisar que el codigo tiene los objetos necesarios
-    if (checkType) {
-        let found = {
-            ifs: 0,
-            loops: 0,
-            func: 0,
-            vars: {}
-        }
-        walk.simple(acorn.parse(code), {
-            ConditionalExpression: () => {
-                found.ifs++;
-            },
-            IfStatement: () => {
-                found.ifs++;
-            },
-            ForStatement: () => {
-                found.loops++;
-            },
-            WhileStatement: () => {
-                found.loops++;
-            },
-            DoWhileStatement: () => {
-                found.loops++;
-            },
-            FunctionExpression: () => {
-                found.func++;
-            }
-        });
-
-        switch(checkType){
-            case "CheckConditional":
-                foundExpected = found.ifs > 0;
-                break;
-            case "CheckCyclicalStructures":
-                foundExpected = found.loops > 0;
-                break;
-            case "CheckFunction":
-                foundExpected = found.func > 0;
-                break;
-        }
-    } else {
-        foundExpected = true;
+    // Evitar que un loop infinito afecte al servidor
+    while(runCount < MAX_EMULATOR_STEP_COUNT 
+        && interpreter.step()) {
+        runCount++;
     }
 
-    return foundExpected;
-}
+    if(runCount >= MAX_EMULATOR_STEP_COUNT){
+        return null;
+    }
 
-export function CheckForDeclaredVariableDeclarationLiterals(code, expectedVars){
-    
+    return "";
 }
