@@ -22,7 +22,7 @@ app.use('/', (request, response) => {
     const output = GetCodeOutput(code);
 
     response.send({
-        runOutup: output,
+        runOutput: output,
         matchesOutput: output.join('') === expectedOutput,
         passedCheck: typeCheckResult
     });
