@@ -1,7 +1,6 @@
 import bodyParser from 'body-parser';
 const express = require('express')
-const GetCodeOutput = require('./src/CheckPuzzle/index.js');
-const CheckSyntax = require('./src/CheckPuzzle/index.js');
+import { GetCodeOutput, CheckSyntax } from  './src/CheckPuzzle/index.js';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -24,7 +23,7 @@ app.use('/', (request, response) => {
 
     response.send({
         runOutup: output,
-        matchesOutput: output === expectedOutput,
+        matchesOutput: output.join('') === expectedOutput,
         passedCheck: typeCheckResult
     });
 });

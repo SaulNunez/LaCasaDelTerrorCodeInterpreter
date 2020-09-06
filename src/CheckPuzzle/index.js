@@ -4,7 +4,7 @@ const walk = require("acorn-walk");
 
 const MAX_EMULATOR_STEP_COUNT = 1000
 
-function GetCodeOutput(code) {
+export function GetCodeOutput(code) {
     let output = [];
     const interpreter = new Interpreter(code, (interpreter, scope) => {
         interpreter.setProperty(scope, 'alert',
@@ -26,7 +26,7 @@ function GetCodeOutput(code) {
     return output;
 }
 
-function CheckSyntax(checkType, code) {
+export function CheckSyntax(checkType, code) {
     let foundExpected = false;
 
     //Revisar que el codigo tiene los objetos necesarios
@@ -71,6 +71,3 @@ function CheckSyntax(checkType, code) {
 
     return foundExpected;
 }
-
-exports.GetCodeOutput = GetCodeOutput;
-exports.CheckSyntax = CheckSyntax;
