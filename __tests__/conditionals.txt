@@ -1,0 +1,7 @@
+var num = 3;
+
+if(num > 2){
+    alert('hola');
+} else {
+    alert('adios');
+}
