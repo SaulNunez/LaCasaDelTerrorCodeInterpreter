@@ -1,6 +1,8 @@
+import ESTraverse from 'estraverse';
 import Interpreter from 'js-interpreter';
 const acorn = require("acorn");
 const walk = require("acorn-walk");
+const esprima = require('esprima');
 
 const MAX_EMULATOR_STEP_COUNT = 1000
 
@@ -26,6 +28,25 @@ export function GetCodeOutput(code) {
     return output;
 }
 
+export function GetVars(code){
+    let vars = {};
+
+    const ast = esprima.parseScript(code);
+    ESTraverse.traverse(ast, {
+        enter: (node) => {
+            if(node.type === 'VariableDeclaration'){
+                node.declarations.forEach(declaration => {
+                    if(declaration.init && declaration.init.value){
+                        vars[declaration.id.name] = declaration.init.value;
+                    }
+                });
+            }
+        }
+    });
+
+    return vars;
+}
+
 export function CheckSyntax(checkType, code) {
     let foundExpected = false;
 
@@ -37,25 +58,27 @@ export function CheckSyntax(checkType, code) {
         vars: {}
     }
     walk.simple(acorn.parse(code), {
-        ConditionalExpression: () => {
+        ConditionalExpression(node) {
             found.ifs++;
         },
-        IfStatement: () => {
+        IfStatement(node, visitors) {
             found.ifs++;
         },
-        ForStatement: () => {
+        ForStatement(node) {
             found.loops++;
         },
-        WhileStatement: () => {
+        WhileStatement(node) {
             found.loops++;
         },
-        DoWhileStatement: () => {
+        DoWhileStatement(node) {
             found.loops++;
         },
-        FunctionExpression: () => {
+        FunctionExpression(node) {
             found.func++;
         }
     });
+
+    console.log(found);
 
     switch (checkType) {
         case 'check_for_branching':

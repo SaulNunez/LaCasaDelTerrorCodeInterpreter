@@ -1,4 +1,4 @@
-import { GetCodeOutput, CheckSyntax } from '../src/CheckPuzzle/index.js';
+import { GetCodeOutput, CheckSyntax, GetVars } from '../src/CheckPuzzle/index.js';
 
 const fs = require('fs');
 const path = require('path');
@@ -6,9 +6,15 @@ const path = require('path');
 describe('testing code output tests', () => {
     test('returns basic stuff', () => {
         const testCode = "alert('hello_world')";
-        expect(GetCodeOutput(testCode)).toBe(["hello_world"]);
+        expect(GetCodeOutput(testCode)).toStrictEqual(["hello_world"]);
     })
 });
+
+describe('test variables in code', () => {
+    test('test simple variable in code', () => {
+        expect(GetVars(' const x=42;')).toStrictEqual({x: 42});
+    });
+})
 
 describe('testing syntax analysis result', () => {
     test('returns correctly on conditional', () => {
