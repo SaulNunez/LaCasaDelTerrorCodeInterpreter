@@ -19,16 +19,11 @@ describe('test variables in code', () => {
 describe('testing syntax analysis result', () => {
     test('returns correctly on conditional', () => {
         const testCodeConditional = fs.readFileSync(path.join(__dirname, './conditionals.txt'),{ encoding: 'utf8' });
-        expect(CheckSyntax(testCodeConditional, 'check_for_branching')).toBe(true);
+        expect(CheckSyntax(testCodeConditional, 'IfStatement')).toBe(true);
     });
 
     test('returns correctly on cycles', () => {
         const testCodeConditional = fs.readFileSync(path.join(__dirname, './cycles.txt'),{ encoding: 'utf8' });
-        expect(CheckSyntax(testCodeConditional, 'check_for_loops')).toBe(true);
-    });
-
-    test('returns correctly on functions', () => {
-        const testCodeConditional = fs.readFileSync(path.join(__dirname, './functions.txt'),{ encoding: 'utf8' });
-        expect(CheckSyntax(testCodeConditional, 'check_for_functions')).toBe(true);
+        expect(CheckSyntax(testCodeConditional, 'WhileStatement')).toBe(true);
     });
 });

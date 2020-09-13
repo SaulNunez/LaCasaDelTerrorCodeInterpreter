@@ -47,50 +47,17 @@ export function GetVars(code){
     return vars;
 }
 
-export function CheckSyntax(checkType, code) {
-    let foundExpected = false;
+export function CheckSyntax(code, checkType) {
+    let found = false;
 
-    //Revisar que el codigo tiene los objetos necesarios
-    let found = {
-        ifs: 0,
-        loops: 0,
-        func: 0,
-        vars: {}
-    }
-    walk.simple(acorn.parse(code), {
-        ConditionalExpression(node) {
-            found.ifs++;
-        },
-        IfStatement(node, visitors) {
-            found.ifs++;
-        },
-        ForStatement(node) {
-            found.loops++;
-        },
-        WhileStatement(node) {
-            found.loops++;
-        },
-        DoWhileStatement(node) {
-            found.loops++;
-        },
-        FunctionExpression(node) {
-            found.func++;
+    const ast = esprima.parseScript(code);
+    ESTraverse.traverse(ast, {
+        enter: (node) => {
+            if(node.type === checkType){
+                found = true;
+            }
         }
     });
 
-    console.log(found);
-
-    switch (checkType) {
-        case 'check_for_branching':
-            foundExpected = found.ifs > 0;
-            break;
-        case 'check_for_loops':
-            foundExpected = found.loops > 0;
-            break;
-        case 'check_for_functions':
-            foundExpected = found.func > 0;
-            break;
-    }
-
-    return foundExpected;
+    return found;
 }
