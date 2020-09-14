@@ -1,4 +1,5 @@
-import { GetCodeOutput, CheckSyntax, GetVars } from '../src/CheckPuzzle/index.js';
+import e from 'express';
+import { GetCodeOutput, CheckSyntax, GetVars, GetFunctions } from '../src/CheckPuzzle/index.js';
 
 const fs = require('fs');
 const path = require('path');
@@ -18,12 +19,19 @@ describe('test variables in code', () => {
 
 describe('testing syntax analysis result', () => {
     test('returns correctly on conditional', () => {
-        const testCodeConditional = fs.readFileSync(path.join(__dirname, './conditionals.txt'),{ encoding: 'utf8' });
-        expect(CheckSyntax(testCodeConditional, 'IfStatement')).toBe(true);
+        const testCode = fs.readFileSync(path.join(__dirname, './conditionals.txt'),{ encoding: 'utf8' });
+        expect(CheckSyntax(testCode, 'IfStatement')).toBe(true);
     });
 
     test('returns correctly on cycles', () => {
-        const testCodeConditional = fs.readFileSync(path.join(__dirname, './cycles.txt'),{ encoding: 'utf8' });
-        expect(CheckSyntax(testCodeConditional, 'WhileStatement')).toBe(true);
+        const testCode = fs.readFileSync(path.join(__dirname, './cycles.txt'),{ encoding: 'utf8' });
+        expect(CheckSyntax(testCode, 'WhileStatement')).toBe(true);
+    });
+});
+
+describe('check syntax gets function info', () => {
+    test('detects function and parameters exists', () => {
+        const testCode = fs.readFileSync(path.join(__dirname, './functions.txt'),{ encoding: 'utf8' });
+        expect(GetFunctions(testCode)).toStrictEqual([{name: "test", parameters: ["a"]}]);
     });
 });

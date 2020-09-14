@@ -28,15 +28,15 @@ export function GetCodeOutput(code) {
     return output;
 }
 
-export function GetVars(code){
+export function GetVars(code) {
     let vars = {};
 
     const ast = esprima.parseScript(code);
     ESTraverse.traverse(ast, {
         enter: (node) => {
-            if(node.type === 'VariableDeclaration'){
+            if (node.type === 'VariableDeclaration') {
                 node.declarations.forEach(declaration => {
-                    if(declaration.init && declaration.init.value){
+                    if (declaration.init && declaration.init.value) {
                         vars[declaration.id.name] = declaration.init.value;
                     }
                 });
@@ -53,11 +53,29 @@ export function CheckSyntax(code, checkType) {
     const ast = esprima.parseScript(code);
     ESTraverse.traverse(ast, {
         enter: (node) => {
-            if(node.type === checkType){
+            if (node.type === checkType) {
                 found = true;
             }
         }
     });
 
     return found;
+}
+
+export function GetFunctions(code) {
+    let functionInfo = [];
+
+    const ast = esprima.parseScript(code);
+    ESTraverse.traverse(ast, {
+        enter: (node) => {
+            if (node.type === 'FunctionDeclaration') {
+                functionInfo.push({ 
+                    name: node.id.name, 
+                    parameters: node.params.map(functionParameter => functionParameter.name)
+                });
+            }
+        }
+    });
+
+    return functionInfo;
 }
