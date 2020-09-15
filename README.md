@@ -39,5 +39,5 @@ Salida esperada
 }
 ```
 * `runOutput`: La salida linea por linea de ejecutar el programa.
-* `matchesOutput`: Resultado de la comparación de la salida con lo esperado. Retorna falso si no se paso valor a comparar.
-* `passedCheck`: Si pasa la prueba de sintaxis. Retorna falso si no se paso valor a comparar.
+* `matchesOutput`: Resultado de la comparación de la salida con lo esperado.
+* `passedCheck`: Si pasa la prueba de sintaxis.
