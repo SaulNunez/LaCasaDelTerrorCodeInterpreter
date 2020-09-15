@@ -17,14 +17,28 @@ app.use('/', (request, response) => {
 
     const checkType = request.body.checkType || "";
     const expectedOutput = request.body.expectedOutput || "";
+    const functionChecks = request.body.functionChecks || {};
 
-    const typeCheckResult = CheckSyntax(checkType, code);
+    let typeCheckResult = false;
+    let functionResult = false;
+
+    if(checkType === 'check_for_branching'){
+        typeCheckResult = CheckSyntax(code, 'IfStatement');
+    } else if(checkType === 'check_for_loops'){
+        typeCheckResult = CheckSyntax(code, 'WhileStatement') || CheckSyntax(code, 'ForStatement') || CheckSyntax(code, 'DoWhileStatement');
+    } else if(checkType === 'check_for_functions'){
+        const functionsInCode = GetFunctions(code);
+        functionResult = functionsInCode.every(fExpected => functionsInCode.findIndex(fFound => fFound.name === fExpected.name) !== -1);
+    }
+
     const output = GetCodeOutput(code);
 
     response.send({
         runOutput: output,
-        matchesOutput: output.join('') === expectedOutput,
-        passedCheck: typeCheckResult
+        matchesOutput: expectedOutput? output.join('') === expectedOutput: true,
+        passedCheck: checkType? typeCheckResult : true,
+        hasFunctions: functionChecks? functionResult: true,
+        passedFunctionChecks: true
     });
 });
 

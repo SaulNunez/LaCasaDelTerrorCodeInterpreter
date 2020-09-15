@@ -1,7 +1,5 @@
 import ESTraverse from 'estraverse';
 import Interpreter from 'js-interpreter';
-const acorn = require("acorn");
-const walk = require("acorn-walk");
 const esprima = require('esprima');
 
 const MAX_EMULATOR_STEP_COUNT = 1000
