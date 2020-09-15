@@ -1,6 +1,6 @@
+import ESTraverse from 'estraverse';
 import Interpreter from 'js-interpreter';
-const acorn = require("acorn");
-const walk = require("acorn-walk");
+const esprima = require('esprima');
 
 const MAX_EMULATOR_STEP_COUNT = 1000
 
@@ -26,48 +26,54 @@ export function GetCodeOutput(code) {
     return output;
 }
 
-export function CheckSyntax(checkType, code) {
-    let foundExpected = false;
+export function GetVars(code) {
+    let vars = {};
 
-    //Revisar que el codigo tiene los objetos necesarios
-    let found = {
-        ifs: 0,
-        loops: 0,
-        func: 0,
-        vars: {}
-    }
-    walk.simple(acorn.parse(code), {
-        ConditionalExpression: () => {
-            found.ifs++;
-        },
-        IfStatement: () => {
-            found.ifs++;
-        },
-        ForStatement: () => {
-            found.loops++;
-        },
-        WhileStatement: () => {
-            found.loops++;
-        },
-        DoWhileStatement: () => {
-            found.loops++;
-        },
-        FunctionExpression: () => {
-            found.func++;
+    const ast = esprima.parseScript(code);
+    ESTraverse.traverse(ast, {
+        enter: (node) => {
+            if (node.type === 'VariableDeclaration') {
+                node.declarations.forEach(declaration => {
+                    if (declaration.init && declaration.init.value) {
+                        vars[declaration.id.name] = declaration.init.value;
+                    }
+                });
+            }
         }
     });
 
-    switch (checkType) {
-        case 'check_for_branching':
-            foundExpected = found.ifs > 0;
-            break;
-        case 'check_for_loops':
-            foundExpected = found.loops > 0;
-            break;
-        case 'check_for_functions':
-            foundExpected = found.func > 0;
-            break;
-    }
+    return vars;
+}
 
-    return foundExpected;
+export function CheckSyntax(code, checkType) {
+    let found = false;
+
+    const ast = esprima.parseScript(code);
+    ESTraverse.traverse(ast, {
+        enter: (node) => {
+            if (node.type === checkType) {
+                found = true;
+            }
+        }
+    });
+
+    return found;
+}
+
+export function GetFunctions(code) {
+    let functionInfo = [];
+
+    const ast = esprima.parseScript(code);
+    ESTraverse.traverse(ast, {
+        enter: (node) => {
+            if (node.type === 'FunctionDeclaration') {
+                functionInfo.push({ 
+                    name: node.id.name, 
+                    parameters: node.params.map(functionParameter => functionParameter.name)
+                });
+            }
+        }
+    });
+
+    return functionInfo;
 }
