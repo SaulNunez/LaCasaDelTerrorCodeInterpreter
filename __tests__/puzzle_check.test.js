@@ -1,5 +1,4 @@
-import e from 'express';
-import { GetCodeOutput, CheckSyntax, GetVars, GetFunctions } from '../src/CheckPuzzle/index.js';
+import { GetCodeOutput, CheckSyntax, GetVars, GetFunctions, TestFunctions } from '../src/CheckPuzzle/index.js';
 
 const fs = require('fs');
 const path = require('path');
@@ -35,3 +34,13 @@ describe('check syntax gets function info', () => {
         expect(GetFunctions(testCode)).toStrictEqual([{name: "test", parameters: ["a"]}]);
     });
 });
+
+describe('check functions output', () => {
+    test('check with one function', () => {
+        const testCode = fs.readFileSync(path.join(__dirname, './functions.txt'),{ encoding: 'utf8' });
+        expect(TestFunctions(testCode, [{
+            name: "test",
+            parameters: ["mundo"]
+        }])).toStrictEqual(['Hola mundo']);
+    });
+})

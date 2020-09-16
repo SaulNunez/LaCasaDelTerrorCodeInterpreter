@@ -1,5 +1,6 @@
 import ESTraverse from 'estraverse';
 import Interpreter from 'js-interpreter';
+import formatForStringLiteral from '../utils/literalFormat';
 const esprima = require('esprima');
 
 const MAX_EMULATOR_STEP_COUNT = 1000
@@ -76,4 +77,16 @@ export function GetFunctions(code) {
     });
 
     return functionInfo;
+}
+
+export function TestFunctions(code, testForFuncResult){
+    const interpreter = new Interpreter(code);
+    interpreter.run();
+
+    return testForFuncResult.map(test => {
+        interpreter.appendCode(`${test.name}(${test.parameters.map(formatForStringLiteral).join(',')});`);
+        interpreter.run();
+
+        return interpreter.value;
+    });
 }

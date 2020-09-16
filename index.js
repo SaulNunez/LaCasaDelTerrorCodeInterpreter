@@ -1,6 +1,6 @@
 import bodyParser from 'body-parser';
 const express = require('express')
-import { GetCodeOutput, CheckSyntax } from  './src/CheckPuzzle/index.js';
+import { GetCodeOutput, CheckSyntax, TestFunctions } from  './src/CheckPuzzle/index.js';
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -17,10 +17,12 @@ app.use('/', (request, response) => {
 
     const checkType = request.body.checkType || "";
     const expectedOutput = request.body.expectedOutput || "";
-    const functionChecks = request.body.functionChecks || {};
+    const checkFunctionExists = request.body.checkFunctionExists || [];
+    const functionChecks = request.body.functionChecks || [];
 
     let typeCheckResult = false;
-    let functionResult = false;
+    let functionsFound = false;
+    let functionsPassedCheck = false;
 
     if(checkType === 'check_for_branching'){
         typeCheckResult = CheckSyntax(code, 'IfStatement');
@@ -28,7 +30,8 @@ app.use('/', (request, response) => {
         typeCheckResult = CheckSyntax(code, 'WhileStatement') || CheckSyntax(code, 'ForStatement') || CheckSyntax(code, 'DoWhileStatement');
     } else if(checkType === 'check_for_functions'){
         const functionsInCode = GetFunctions(code);
-        functionResult = functionsInCode.every(fExpected => functionsInCode.findIndex(fFound => fFound.name === fExpected.name) !== -1);
+        functionsFound = functionsInCode.every(fExpected => functionsInCode.findIndex(fFound => fFound.name === fExpected.name) !== -1);
+        functionsPassedCheck = TestFunctions(code, functionChecks).every((result, i) => result === functionsPassedCheck[i].output)
     }
 
     const output = GetCodeOutput(code);
@@ -37,8 +40,8 @@ app.use('/', (request, response) => {
         runOutput: output,
         matchesOutput: expectedOutput? output.join('') === expectedOutput: true,
         passedCheck: checkType? typeCheckResult : true,
-        hasFunctions: functionChecks? functionResult: true,
-        passedFunctionChecks: true
+        hasFunctions: checkFunctionExists? functionsFound: true,
+        passedFunctionChecks: functionsChecks? functionsPassedCheck : true
     });
 });
 
